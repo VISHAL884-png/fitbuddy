@@ -87,7 +87,7 @@ let TAB = 'today';
 let saveTimer = null;
 
 const todayKey = () => new Date().toISOString().slice(0,10);
-function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{} }; }
+function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{}, ex:{} }; }
 
 /* ============ DATA ============ */
 const MEALS = [
@@ -99,13 +99,32 @@ const MEALS = [
   {id:'m6',time:'11:00 PM',label:'Haldi milk / makhana / dates only',tag:'craving fix'},
 ];
 const PPL = {
-  0:{name:'Rest + Walk',focus:'Recovery',rest:true,ex:['30 min easy walk','Stretch / mobility']},
-  1:{name:'Push',focus:'Chest + Triceps',ex:['Flat barbell/DB press 4×8','Incline DB press 3×10','Cable fly 3×12','Overhead tricep ext 3×12','Rope pushdown 3×15']},
-  2:{name:'Pull',focus:'Back + Biceps',ex:['Lat pulldown / pull-up 4×8','Barbell row 4×8','Seated cable row 3×10','Face pull 3×15','Barbell curl 3×12']},
-  3:{name:'Legs',focus:'Legs + Abs',ex:['Squat 4×8','Leg press 3×12','Romanian deadlift 3×10','Leg curl 3×12','Calf raise 4×15','Hanging leg raise 3×15']},
-  4:{name:'Push',focus:'Shoulders + Triceps',ex:['Overhead press 4×8','Lateral raise 4×15','Rear delt fly 3×15','Front raise 3×12','Tricep dips 3×12']},
-  5:{name:'Pull',focus:'Back + Biceps',ex:['Deadlift / rack pull 4×6','Pulldown 3×10','Cable row 3×12','Shrugs 3×15','Hammer curl 3×12']},
-  6:{name:'Legs',focus:'Legs + Cardio',ex:['Hack/front squat 4×8','Walking lunge 3×12','Leg extension 3×15','Leg curl 3×12','Calf raise 4×20','15–20 min cardio']},
+  0:{name:'Rest + Walk',focus:'Recovery',rest:true,
+     warmup:[],ex:[],stretch:['30 min easy walk','Full-body light stretch 10 min']},
+  1:{name:'Push',focus:'Chest + Triceps',
+     warmup:['5 min incline walk / cycle','Arm circles + shoulder rolls 1 min','10 slow pushups','2 light warmup sets of first exercise'],
+     ex:['Flat barbell / DB press 4×8','Incline DB press 3×10','Machine chest press 3×12','Cable fly 3×12','Overhead tricep extension 3×12','Rope pushdown 3×15'],
+     stretch:['Chest doorway stretch 30s ×2','Overhead tricep stretch 30s each','Cross-body shoulder stretch 30s each']},
+  2:{name:'Pull',focus:'Back + Biceps',
+     warmup:['5 min rowing machine / cycle','Band pull-aparts 2×15','2 light sets lat pulldown'],
+     ex:['Lat pulldown / pull-up 4×8','Barbell row 4×8','Seated cable row 3×10','Face pull 3×15','Barbell curl 3×12','Incline DB curl 3×12 (long head)'],
+     stretch:['Lat hang / stretch 30s ×2','Biceps wall stretch 30s each','Child\u2019s pose 45s']},
+  3:{name:'Legs',focus:'Legs + Abs',
+     warmup:['5 min cycle','Leg swings 10 each','15 bodyweight squats','2 light sets of squat'],
+     ex:['Squat 4×8','Leg press 3×12','Romanian deadlift 3×10','Leg curl 3×12','Leg extension 3×12','Calf raise 4×15','Hanging leg raise 3×15','Cable crunch 3×15'],
+     stretch:['Quad stretch 30s each','Hamstring stretch 30s each','Hip flexor lunge stretch 30s each','Calf stretch 30s each']},
+  4:{name:'Push',focus:'Shoulders + Triceps',
+     warmup:['5 min cycle','Band pull-aparts 2×15','Light lateral raises 2×15','2 light sets overhead press'],
+     ex:['Overhead press 4×8','Lateral raise 4×15','Rear delt fly 3×15','Front raise 3×12','Close-grip press / dips 3×12','Rope pushdown 3×12'],
+     stretch:['Cross-body shoulder stretch 30s each','Overhead tricep stretch 30s each','Neck rolls 30s']},
+  5:{name:'Pull',focus:'Back + Biceps',
+     warmup:['5 min rowing machine / cycle','Band pull-aparts 2×15','2 light sets of deadlift'],
+     ex:['Deadlift / rack pull 4×6','Lat pulldown 3×10','Seated cable row 3×12','Shrugs 3×15','Hammer curl 3×12','Preacher / concentration curl 3×12 (short head)'],
+     stretch:['Lat hang / stretch 30s ×2','Lower back cat-cow 1 min','Biceps wall stretch 30s each']},
+  6:{name:'Legs',focus:'Legs + Cardio',
+     warmup:['5 min cycle','Leg swings 10 each','15 bodyweight squats'],
+     ex:['Hack / front squat 4×8','Walking lunge 3×12','Leg extension 3×15','Leg curl 3×12','Calf raise 4×20','Cardio 15–20 min (incline walk)'],
+     stretch:['Quad stretch 30s each','Hamstring stretch 30s each','Calf stretch 30s each']},
 };
 const PHASES = [
   {n:1,m:'Month 1–4',t:'Foundation + Fat Loss',g:'94.7 → ~85 kg'},
@@ -116,8 +135,8 @@ const PHASES = [
 
 function weekNo(){ const s=new Date((S.profile.startDate||todayKey())+'T00:00:00'); const d=Math.floor((new Date()-s)/864e5); return Math.max(1,Math.floor(d/7)+1); }
 function workoutToday(){ const w=weekNo(), day=new Date().getDay();
-  if(w<=3){ const alt=day%2===0; return {name:'Trainer Plan',focus:alt?'Full Body':'Cardio + Core',rest:day===0,
-    ex:["Follow your gym trainer's plan",'Full body + cardio on alternate days','Note your weights to track overload']}; }
+  if(w<=3 && !S.profile.skipTrainer){ const alt=day%2===0; return {name:'Trainer Plan',focus:alt?'Full Body':'Cardio + Core',rest:day===0,
+    warmup:['5 min cardio','Light mobility'],ex:["Follow your gym trainer's plan",'Full body + cardio on alternate days'],stretch:['Light full-body stretch']}; }
   return PPL[day]; }
 
 /* ============ API ============ */
@@ -149,7 +168,8 @@ async function boot(){
   }
 }
 function normalizeDay(t){ return { date:t.date, weight:t.weight||'', water:+t.water||0, workoutDone:!!t.workoutDone,
-  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{} }; }
+  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{}, ex:t.ex||{} }; }
+function lastEx(name){ for(const l of S.logs){ if(l.date===todayKey()) continue; const e=(l.ex||{})[name]; if(e&&e.w) return {w:e.w,r:e.r,date:l.date}; } return null; }
 
 /* ============ RENDER ============ */
 function render(){
@@ -177,8 +197,19 @@ function header(){
 function viewToday(){
   const w=workoutToday(), t=S.today;
   const done=Object.values(t.meals).filter(Boolean).length;
-  const exHtml=w.ex.map(e=>`<li style="display:flex;gap:8px;align-items:center;padding:3px 0" class="sm">
-    <span style="width:5px;height:5px;border-radius:99px;background:var(--amber)"></span>${e}</li>`).join('');
+  const warmHtml=(w.warmup||[]).map(x=>`<li style="display:flex;gap:8px;align-items:flex-start;padding:2px 0" class="xs mut">
+    <span style="margin-top:5px;width:4px;height:4px;border-radius:99px;background:var(--mut2);flex:0 0 auto"></span>${x}</li>`).join('');
+  const exHtml=(w.ex||[]).map((e,i)=>{const log=t.ex[e]||{w:'',r:''};const prev=lastEx(e);
+    return `<div style="padding:9px 0;border-bottom:1px solid var(--line)">
+      <div class="sm" style="margin-bottom:6px">${e}</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="exin" data-ex="${escapeHtml(e)}" data-f="w" inputmode="decimal" value="${log.w}" placeholder="kg" style="padding:8px 10px;text-align:center">
+        <span class="mut2 xs">×</span>
+        <input class="exin" data-ex="${escapeHtml(e)}" data-f="r" inputmode="numeric" value="${log.r}" placeholder="reps" style="padding:8px 10px;text-align:center">
+        <span class="xs mut2" style="flex:1;text-align:right">${prev?('last: '+prev.w+'×'+prev.r):'first time'}</span>
+      </div></div>`;}).join('');
+  const stretchHtml=(w.stretch||[]).map(x=>`<li style="display:flex;gap:8px;align-items:flex-start;padding:2px 0" class="xs mut">
+    <span style="margin-top:5px;width:4px;height:4px;border-radius:99px;background:var(--mut2);flex:0 0 auto"></span>${x}</li>`).join('');
   const mealHtml=MEALS.map(m=>{const on=!!t.meals[m.id];
     return `<button class="meal" data-meal="${m.id}"><span class="check ${on?'on':''}">✓</span>
       <span style="flex:1"><span class="sm ${on?'strike':''}" style="display:block">${m.label}</span>
@@ -188,12 +219,14 @@ function viewToday(){
   return `
   <div class="card">
     <div class="row"><span class="eyebrow">Today's Session</span>
-      <span class="pill ${w.rest?'grey':'amber'}">${weekNo()<=3?'Trainer phase':'PPL · Wk '+weekNo()}</span></div>
+      <span class="pill ${w.rest?'grey':'amber'}">${(weekNo()<=3&&!S.profile.skipTrainer)?'Trainer phase':'PPL · Wk '+weekNo()}</span></div>
     <div class="disp" style="font-size:28px;margin-top:2px">${w.name}</div>
     <div class="sm mut">${w.focus}</div>
-    <ul style="margin-top:10px">${exHtml}</ul>
-    ${w.rest?'':`<button class="btn ${t.workoutDone?'green':''}" id="wbtn" style="margin-top:14px">${t.workoutDone?'✓ Session logged':'Mark session done'}</button>
-    <p class="xs" style="color:var(--amber);margin-top:8px">Progressive overload: beat last week — 1 rep or 1.25 kg more.</p>`}
+    ${warmHtml?`<div class="eyebrow" style="margin:14px 0 4px;color:var(--amber)">Warmup</div><ul>${warmHtml}</ul>`:''}
+    ${exHtml?`<div class="eyebrow" style="margin:14px 0 2px">Workout · log kg × reps</div>${exHtml}
+      <p class="xs" style="color:var(--amber);margin-top:8px">Beat "last" — 1 rep ya 1.25 kg zyada. Form pe dhyaan, ego nahi.</p>`:''}
+    ${stretchHtml?`<div class="eyebrow" style="margin:14px 0 4px">Cooldown stretch</div><ul>${stretchHtml}</ul>`:''}
+    ${w.rest?'':`<button class="btn ${t.workoutDone?'green':''}" id="wbtn" style="margin-top:14px">${t.workoutDone?'✓ Session logged':'Mark session done'}</button>`}
   </div>
   <div class="card">
     <div class="row"><span class="eyebrow">Diet · ${done}/6</span><span class="xs mut2">~2000 kcal · 150g+ protein</span></div>
@@ -346,7 +379,11 @@ function viewPlan(){
     <div style="display:flex;flex-direction:column;gap:11px">${phases}</div></div>
   <div class="card"><div class="eyebrow" style="margin-bottom:8px">Plan start date</div>
     <input type="date" id="sdate" value="${S.profile.startDate||todayKey()}">
-    <p class="xs mut2" style="margin-top:8px">Weeks 1–3 = trainer plan, Week 4+ = PPL split.</p></div>
+    <p class="xs mut2" style="margin-top:8px">Weeks 1–3 = trainer plan, Week 4+ = PPL split.</p>
+    <div class="row" style="margin-top:14px">
+      <span class="sm">Skip trainer phase — start PPL now</span>
+      <button class="seg ${S.profile.skipTrainer?'on':''}" id="skiptr" style="flex:0 0 auto;padding:7px 16px">${S.profile.skipTrainer?'ON':'OFF'}</button>
+    </div></div>
   <div class="card"><div class="eyebrow" style="margin-bottom:10px">Targets</div>
     <div class="grid2">
       <div><div class="xs mut2" style="margin-bottom:5px">Current weight</div><input id="pcur" inputmode="decimal" value="${S.profile.currentWeight||''}"></div>
@@ -384,6 +421,8 @@ function attach(){
     document.querySelectorAll('[data-energy]').forEach(b=>b.onclick=()=>{S.today.energy=+b.dataset.energy;queueSave();render();});
     const wb=document.getElementById('wbtn'); if(wb) wb.onclick=()=>{S.today.workoutDone=!S.today.workoutDone;queueSave();render();};
     const sl=document.getElementById('sleep'); if(sl) sl.onchange=()=>{S.today.sleep=sl.value;queueSave();};
+    document.querySelectorAll('.exin').forEach(i=>i.oninput=()=>{const name=i.dataset.ex,f=i.dataset.f;
+      if(!S.today.ex[name])S.today.ex[name]={w:'',r:''};S.today.ex[name][f]=i.value;queueSave();});
   }
   if(TAB==='progress'){
     document.getElementById('wsave').onclick=async()=>{const v=document.getElementById('wnow').value;if(!v)return;
@@ -402,6 +441,7 @@ function attach(){
   if(TAB==='plan'){
     document.getElementById('review').onclick=()=>{TAB='report';render();};
     document.getElementById('sdate').onchange=async e=>{S.profile.startDate=e.target.value;await api('saveProfile',{profile:S.profile});render();};
+    document.getElementById('skiptr').onclick=async()=>{S.profile.skipTrainer=!S.profile.skipTrainer;await api('saveProfile',{profile:S.profile});render();};
     document.getElementById('psave').onclick=async()=>{S.profile.currentWeight=parseFloat(document.getElementById('pcur').value)||S.profile.currentWeight;
       S.profile.startWeight=parseFloat(document.getElementById('pstart').value)||S.profile.startWeight;await api('saveProfile',{profile:S.profile});flashSaved();render();};
     document.getElementById('reseturl').onclick=()=>{localStorage.removeItem(LS_URL);API_URL='';renderSetup();};
