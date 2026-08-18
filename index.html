@@ -21,53 +21,67 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{background:
-      radial-gradient(680px 320px at 50% -60px, rgba(238,163,16,.10), transparent 65%),
+      radial-gradient(600px 300px at 15% -80px, rgba(238,163,16,.14), transparent 60%),
+      radial-gradient(500px 260px at 100% 140px, rgba(51,201,138,.06), transparent 55%),
+      radial-gradient(700px 420px at 50% 100%, rgba(238,163,16,.05), transparent 60%),
       var(--bg);
     color:var(--txt);font-family:Inter,system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;padding-bottom:92px;min-height:100vh}
+    -webkit-font-smoothing:antialiased;padding-bottom:96px;min-height:100vh}
   .wrap{max-width:480px;margin:0 auto;padding:0 16px}
   .disp{font-family:'Barlow Condensed',sans-serif;letter-spacing:.008em;font-variant-numeric:tabular-nums}
   .eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.2em;color:var(--mut2);font-weight:600;
     display:flex;align-items:center;gap:6px}
   .eyebrow svg{width:13px;height:13px;flex:0 0 auto;opacity:.85}
-  .card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;
-    padding:16px;margin-bottom:12px;box-shadow:0 1px 0 rgba(255,255,255,.02) inset, 0 8px 20px -14px rgba(0,0,0,.6);
-    animation:rise .35s cubic-bezier(.2,.8,.2,1) both}
-  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:linear-gradient(165deg,var(--card2),var(--card) 65%);border:1px solid var(--line);border-radius:19px;
+    padding:16px;margin-bottom:12px;position:relative;overflow:hidden;
+    box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 14px 30px -20px rgba(0,0,0,.75);
+    animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+  .card::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
+  @keyframes rise{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
   .row{display:flex;align-items:center;justify-content:space-between}
   button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
   input,select,textarea{font-family:inherit;width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;
-    padding:11px 14px;color:var(--txt);font-size:15px;outline:none;transition:box-shadow .15s,border-color .15s}
-  input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px var(--amber-dim);border-color:var(--amber)}
+    padding:11px 14px;color:var(--txt);font-size:15px;outline:none;transition:box-shadow .15s,border-color .15s;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+  input:focus,textarea:focus,select:focus{box-shadow:inset 0 1px 2px rgba(0,0,0,.3), 0 0 0 3px var(--amber-dim);border-color:var(--amber)}
   .btn{width:100%;padding:13px;border-radius:13px;background:var(--card2);border:1px solid var(--line);color:var(--mut);
-    font-weight:600;font-size:14px;transition:transform .12s,filter .12s;letter-spacing:.01em}
+    font-weight:600;font-size:14px;transition:transform .12s,filter .12s;letter-spacing:.01em;position:relative}
   .btn:active{transform:scale(.97);filter:brightness(.94)}
-  .btn.amber{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;border:none;
-    box-shadow:0 4px 14px -4px rgba(238,163,16,.5)}
-  .btn.green{background:linear-gradient(180deg,#3fdc9c,var(--green));color:#062015;border:none;
-    box-shadow:0 4px 14px -4px rgba(51,201,138,.45)}
+  .btn.amber{background:linear-gradient(180deg,#f8b83a,var(--amber) 55%,var(--amber2));color:#1a1206;border:none;
+    box-shadow:0 6px 18px -6px rgba(238,163,16,.55), inset 0 1px 0 rgba(255,255,255,.35)}
+  .btn.green{background:linear-gradient(180deg,#57e6a8,var(--green) 55%,#1fa878);color:#062015;border:none;
+    box-shadow:0 6px 18px -6px rgba(51,201,138,.5), inset 0 1px 0 rgba(255,255,255,.3)}
   .pill{font-size:10.5px;padding:4px 10px;border-radius:99px;font-weight:600;letter-spacing:.03em}
-  .pill.amber{background:var(--amber-dim);color:var(--amber)}
+  .pill.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(238,163,16,.25)}
   .pill.grey{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
   .hdr{padding:20px 0 14px}
   .check{width:23px;height:23px;border-radius:7px;display:flex;align-items:center;justify-content:center;
-    font-size:13px;flex:0 0 auto;border:1.5px solid var(--line2);color:transparent;transition:.15s}
-  .check.on{background:linear-gradient(180deg,#3fdc9c,var(--green));color:#062015;border-color:transparent}
+    font-size:13px;flex:0 0 auto;border:1.5px solid var(--line2);color:transparent;transition:.18s cubic-bezier(.3,1.5,.5,1)}
+  .check.on{background:linear-gradient(180deg,#3fdc9c,var(--green));color:#062015;border-color:transparent;transform:scale(1.06)}
   .meal{display:flex;gap:12px;align-items:flex-start;padding:9px 0;text-align:left;width:100%}
   .strike{color:var(--mut2);text-decoration:line-through}
-  .bar{height:6px;border-radius:99px;background:var(--card2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line)}
-  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--amber2),var(--amber));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .bar{height:7px;border-radius:99px;background:var(--card2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line);position:relative}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--amber2),var(--amber));transition:width .6s cubic-bezier(.2,.8,.2,1);
+    position:relative;overflow:hidden}
+  .bar > i::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    width:40%;animation:shimmer 2.4s ease-in-out infinite}
+  @keyframes shimmer{0%{transform:translateX(-120%)}100%{transform:translateX(340%)}}
   .wglass{flex:1;height:34px;border-radius:8px;background:var(--card2);border:1px solid var(--line);transition:.15s}
-  .wglass.on{background:linear-gradient(180deg,#f5b02a,var(--amber));border-color:transparent}
+  .wglass.on{background:linear-gradient(180deg,#f5b02a,var(--amber));border-color:transparent;box-shadow:0 3px 10px -4px rgba(238,163,16,.6)}
   .seg{flex:1;padding:9px 0;border-radius:9px;background:var(--card2);border:1px solid var(--line);color:var(--mut2);font-size:14px;text-align:center;transition:.15s}
   .seg.on{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;font-weight:700;border-color:transparent}
   nav{position:fixed;left:0;right:0;bottom:0;z-index:20}
-  nav .bar2{max-width:480px;margin:0 auto;background:rgba(15,15,17,.92);backdrop-filter:blur(14px) saturate(160%);
+  nav::before{content:'';position:absolute;top:-24px;left:0;right:0;height:24px;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(10,10,11,.5))}
+  nav .bar2{max-width:480px;margin:0 auto;background:rgba(13,13,15,.88);backdrop-filter:blur(18px) saturate(160%);
     border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);position:relative}
-  nav button{flex:1;padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--mut2);position:relative;transition:color .15s}
-  nav button.on{color:var(--amber)}
-  nav button.on::before{content:'';position:absolute;top:2px;width:26px;height:26px;border-radius:9px;background:var(--amber-dim);z-index:-1}
-  nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  nav button{flex:1;padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--mut2);position:relative;transition:color .18s,transform .18s}
+  nav button.on{color:var(--amber);transform:translateY(-1px)}
+  nav button.on::before{content:'';position:absolute;top:0px;width:30px;height:28px;border-radius:10px;
+    background:radial-gradient(circle,var(--amber-dim),transparent 75%);z-index:-1}
+  nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s}
+  nav button.on svg{transform:scale(1.08)}
   nav .lb{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
   .bub{max-width:86%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
   .bub.me{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;border-bottom-right-radius:5px}
@@ -79,13 +93,19 @@
   .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   a{color:var(--amber)}
   .mut{color:var(--mut)} .mut2{color:var(--mut2)} .sm{font-size:13px} .xs{font-size:11px}
-  .plate{width:56px;height:56px;border-radius:99px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(circle at 35% 30%, #232326, #131315 70%);border:1px solid var(--line2);
-    box-shadow:inset 0 0 0 3px var(--bg), inset 0 0 0 4px var(--line2), 0 6px 16px -8px rgba(0,0,0,.7);position:relative}
-  .plate::after{content:'';position:absolute;width:16px;height:16px;border-radius:99px;background:var(--bg);border:1px solid var(--line2)}
-  .plate .pv{position:relative;z-index:2;font-family:'Barlow Condensed';font-weight:700;font-size:15px;color:var(--amber)}
-  #app{animation:fadein .25s ease both}
+  .plate{width:60px;height:60px;border-radius:99px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 32% 28%, #26262a, #111113 72%);border:1px solid var(--line2);position:relative;
+    box-shadow:inset 0 0 0 3px var(--bg), inset 0 0 0 4px var(--line2), inset 0 -6px 10px -6px rgba(0,0,0,.6), 0 8px 20px -10px rgba(0,0,0,.75)}
+  .plate::before{content:'';position:absolute;inset:-2px;border-radius:99px;padding:2px;
+    background:conic-gradient(from 0deg, var(--amber), transparent 30%, transparent 70%, var(--amber));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:.55; animation:spin 6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .plate::after{content:'';position:absolute;width:17px;height:17px;border-radius:99px;background:var(--bg);border:1px solid var(--line2);z-index:2}
+  .plate .pv{position:relative;z-index:3;font-family:'Barlow Condensed';font-weight:700;font-size:15px;color:var(--amber);text-align:center;line-height:1.05}
+  #app{animation:fadein .3s ease both}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
+  ::selection{background:var(--amber-dim);color:var(--amber)}
 </style>
 </head>
 <body>
@@ -299,20 +319,23 @@ function header(){
   const streak=calcStreak();
   const cal=last7Days();
   const dotColor={done:'var(--green)',missed:'var(--red)',today:'var(--amber)','rest-logged':'var(--mut2)',rest:'var(--line2)',future:'var(--line)'};
-  const calHtml=cal.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
-    <span class="xs mut2" style="font-weight:600">${d.label}</span>
-    <span style="width:8px;height:8px;border-radius:99px;background:${dotColor[d.status]};box-shadow:${d.status==='today'?'0 0 0 3px var(--amber-dim)':'none'}"></span>
+  const calHtml=cal.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1">
+    <span class="xs mut2" style="font-weight:700;font-size:9.5px">${d.label}</span>
+    <span style="width:7px;height:7px;border-radius:99px;background:${dotColor[d.status]};box-shadow:${d.status==='today'?'0 0 0 4px var(--amber-dim)':'0 1px 3px rgba(0,0,0,.4)'};transition:.2s"></span>
   </div>`).join('');
   return `<div class="wrap hdr"><div class="row" style="align-items:center">
-    <div><div class="eyebrow" style="color:var(--amber)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>
-      Iron Log</div>
-    <div class="disp" style="font-size:29px;margin-top:4px;font-weight:700">Week ${weekNo()} <span class="mut2" style="font-weight:500">· ${S.profile.name||'You'}</span></div></div>
+    <div>
+      <div class="eyebrow" style="color:var(--amber);position:relative;display:inline-flex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>
+        Iron Log
+      </div>
+      <div class="disp" style="font-size:31px;margin-top:5px;font-weight:700;line-height:1">Week ${weekNo()} <span class="mut2" style="font-weight:500;font-size:26px">· ${S.profile.name||'You'}</span></div>
+    </div>
     <div class="plate">
-      ${streak>0?`<span class="pv">🔥${streak}</span>`:`<span class="pv" style="font-size:13px">${lost}<br><span style="font-size:8px;letter-spacing:.05em">KG</span></span>`}
+      ${streak>0?`<span class="pv">🔥${streak}</span>`:`<span class="pv" style="font-size:14px">${lost}<br><span style="font-size:8px;letter-spacing:.06em;color:var(--mut2)">KG</span></span>`}
     </div>
     </div>
-    <div style="display:flex;gap:2px;margin-top:14px;padding:9px 10px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:13px">${calHtml}</div>
+    <div style="display:flex;gap:2px;margin-top:15px;padding:10px 10px 9px;background:linear-gradient(165deg,var(--card2),var(--card) 70%);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 22px -16px rgba(0,0,0,.7)">${calHtml}</div>
   </div>`;
 }
 
@@ -360,11 +383,13 @@ function viewToday(){
         <button data-rmfood="${i}" style="color:var(--red);font-size:16px;line-height:1">×</button>
       </span></div>`).join('')}</div>`:'<div class="xs mut2" style="text-align:center;padding:10px 0">Nothing logged yet today.</div>';
   return `
-  <div class="card">
-    <div class="row"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>Today's Session</span>
+  <div class="card" style="background:linear-gradient(155deg,var(--card2),var(--card) 60%);">
+    <div style="position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:99px;
+      background:radial-gradient(circle,${w.rest?'rgba(124,138,153,.12)':'rgba(238,163,16,.16)'},transparent 70%);pointer-events:none"></div>
+    <div class="row" style="position:relative"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>Today's Session</span>
       <span class="pill ${w.rest?'grey':'amber'}">${(weekNo()<=3&&!S.profile.skipTrainer)?'Trainer phase':'PPL · Wk '+weekNo()}</span></div>
-    <div class="disp" style="font-size:28px;margin-top:2px">${w.name}</div>
-    <div class="sm mut">${w.focus}</div>
+    <div class="disp" style="font-size:34px;margin-top:4px;font-weight:700;position:relative">${w.name}</div>
+    <div class="sm mut" style="position:relative">${w.focus}</div>
     ${warmHtml?`<div class="eyebrow" style="margin:14px 0 4px;color:var(--amber)">Warmup</div><ul>${warmHtml}</ul>`:''}
     ${exHtml?`<div class="eyebrow" style="margin:14px 0 2px">Workout · log kg × reps</div>${exHtml}
       <p class="xs" style="color:var(--amber);margin-top:8px">Beat "last" — 1 rep ya 1.25 kg zyada. Form pe dhyaan, ego nahi.</p>`:''}
@@ -526,16 +551,40 @@ function measInput(id,l,v,prev){
   return `<div><div class="xs mut2" style="margin-bottom:5px;text-align:center">${l}</div>
   <input class="meas" data-m="${id}" inputmode="decimal" value="${v||''}" style="text-align:center;padding:9px 4px">${deltaHtml}</div>`; }
 function ringSvg(pct,big){ const r=50,c=2*Math.PI*r,off=c-pct/100*c;
-  return `<svg width="124" height="124" viewBox="0 0 124 124"><g transform="rotate(-90 62 62)">
-    <circle cx="62" cy="62" r="${r}" stroke="#27272a" stroke-width="10" fill="none"/>
-    <circle cx="62" cy="62" r="${r}" stroke="var(--amber)" stroke-width="10" fill="none" stroke-linecap="round"
-      stroke-dasharray="${c}" stroke-dashoffset="${off}"/></g>
-    <text x="62" y="60" text-anchor="middle" class="disp" fill="#f4f4f5" font-size="26">${big}</text>
-    <text x="62" y="76" text-anchor="middle" fill="#71717a" font-size="9" letter-spacing="2">KG NOW</text></svg>`; }
-function sparkSvg(d){ const ws=d.map(x=>x.w),mn=Math.min(...ws),mx=Math.max(...ws),rg=(mx-mn)||1,W=380,H=90;
-  const pts=d.map((x,i)=>`${i/(d.length-1)*W},${H-(x.w-mn)/rg*(H-14)-7}`).join(' ');
-  const dots=d.map((x,i)=>`<circle cx="${i/(d.length-1)*W}" cy="${H-(x.w-mn)/rg*(H-14)-7}" r="2.5" fill="var(--amber)"/>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:90px"><polyline points="${pts}" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>
+  return `<svg width="132" height="132" viewBox="0 0 124 124">
+    <defs>
+      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f8c04a"/><stop offset="100%" stop-color="var(--amber2)"/>
+      </linearGradient>
+      <filter id="ringGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g transform="rotate(-90 62 62)">
+      <circle cx="62" cy="62" r="${r}" stroke="#232326" stroke-width="11" fill="none"/>
+      <circle cx="62" cy="62" r="${r}" stroke="url(#ringGrad)" stroke-width="11" fill="none" stroke-linecap="round"
+        stroke-dasharray="${c}" stroke-dashoffset="${off}" filter="url(#ringGlow)"
+        style="transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)"/></g>
+    <text x="62" y="59" text-anchor="middle" class="disp" fill="#f6f5f2" font-size="27" font-weight="700">${big}</text>
+    <text x="62" y="76" text-anchor="middle" fill="#67635e" font-size="9" letter-spacing="2.5" font-weight="600">KG NOW</text></svg>`; }
+function sparkSvg(d){ const ws=d.map(x=>x.w),mn=Math.min(...ws),mx=Math.max(...ws),rg=(mx-mn)||1,W=380,H=94;
+  const pt=(x,i)=>[i/(d.length-1)*W, H-(x.w-mn)/rg*(H-22)-11];
+  const pts=d.map((x,i)=>pt(x,i).join(',')).join(' ');
+  const first=pt(d[0],0), last=pt(d[d.length-1],d.length-1);
+  const area=`${first[0]},${H} ${pts} ${last[0]},${H}`;
+  const dots=d.map((x,i)=>{const[px,py]=pt(x,i);const isLast=i===d.length-1;
+    return `<circle cx="${px}" cy="${py}" r="${isLast?4:2.5}" fill="${isLast?'#f8c04a':'var(--amber)'}" ${isLast?'filter="url(#sparkGlow)"':''}/>`;}).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:94px">
+    <defs>
+      <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--amber)" stop-opacity=".28"/><stop offset="100%" stop-color="var(--amber)" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="sparkGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <polygon points="${area}" fill="url(#sparkFill)"/>
+    <polyline points="${pts}" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>
     <div class="row xs mut2"><span>${d[0].date.slice(5)}</span><span>${d[d.length-1].date.slice(5)}</span></div>`; }
 
 /* ---- REPORT (free — share with Claude) ---- */
