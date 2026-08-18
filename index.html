@@ -87,7 +87,7 @@ let TAB = 'today';
 let saveTimer = null;
 
 const todayKey = () => new Date().toISOString().slice(0,10);
-function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{}, ex:{}, foods:[] }; }
+function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{}, ex:{}, foods:[], steps:'' }; }
 
 /* ============ DATA ============ */
 const MEALS = [
@@ -169,6 +169,37 @@ const PHASES = [
 ];
 
 function weekNo(){ const s=new Date((S.profile.startDate||todayKey())+'T00:00:00'); const d=Math.floor((new Date()-s)/864e5); return Math.max(1,Math.floor(d/7)+1); }
+function calcStreak(){
+  // consecutive days (ending today or yesterday) with workout done or food logged
+  const byDate={}; S.logs.forEach(l=>byDate[l.date]=l);
+  let streak=0; let d=new Date();
+  // if today not yet logged, start checking from yesterday
+  const t=byDate[todayKey()];
+  const todayActive = t && (t.workoutDone || (t.foods&&t.foods.length));
+  if(!todayActive) d.setDate(d.getDate()-1);
+  for(;;){
+    const key=d.toISOString().slice(0,10);
+    const l=byDate[key];
+    const isSun=d.getDay()===0;
+    const active = l && (l.workoutDone || (l.foods&&l.foods.length));
+    if(active || (isSun && l)) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+function last7Days(){
+  const days=[]; const byDate={}; S.logs.forEach(l=>byDate[l.date]=l);
+  for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
+    const key=d.toISOString().slice(0,10); const l=byDate[key];
+    let status='future';
+    if(d.getDay()===0) status = l ? 'rest-logged' : (key<=todayKey()?'rest':'future');
+    else if(l&&l.workoutDone) status='done';
+    else if(key<todayKey()) status='missed';
+    else if(key===todayKey()) status='today';
+    days.push({key,label:'SMTWTFS'[d.getDay()],date:d.getDate(),status});
+  }
+  return days;
+}
 function workoutToday(){ const w=weekNo(), day=new Date().getDay();
   if(w<=3 && !S.profile.skipTrainer){ const alt=day%2===0; return {name:'Trainer Plan',focus:alt?'Full Body':'Cardio + Core',rest:day===0,
     warmup:['5 min cardio','Light mobility'],ex:["Follow your gym trainer's plan",'Full body + cardio on alternate days'],stretch:['Light full-body stretch']}; }
@@ -203,7 +234,7 @@ async function boot(){
   }
 }
 function normalizeDay(t){ return { date:t.date, weight:t.weight||'', water:+t.water||0, workoutDone:!!t.workoutDone,
-  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{}, ex:t.ex||{}, foods:t.foods||[] }; }
+  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{}, ex:t.ex||{}, foods:t.foods||[], steps:t.steps||'' }; }
 function lastEx(name){ for(const l of S.logs){ if(l.date===todayKey()) continue; const e=(l.ex||{})[name]; if(e&&e.w) return {w:e.w,r:e.r,date:l.date}; } return null; }
 
 /* ============ RENDER ============ */
@@ -221,11 +252,22 @@ function render(){
 function header(){
   const cur=parseFloat(S.profile.currentWeight)||S.profile.startWeight||0;
   const lost=((S.profile.startWeight||0)-cur).toFixed(1);
+  const streak=calcStreak();
+  const cal=last7Days();
+  const dotColor={done:'var(--green)',missed:'var(--red)',today:'var(--amber)','rest-logged':'var(--mut2)',rest:'var(--line2)',future:'var(--line)'};
+  const calHtml=cal.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+    <span class="xs mut2">${d.label}</span>
+    <span style="width:9px;height:9px;border-radius:99px;background:${dotColor[d.status]}"></span>
+  </div>`).join('');
   return `<div class="wrap hdr"><div class="row" style="align-items:flex-end">
     <div><div class="eyebrow" style="color:var(--amber)">Iron Log</div>
     <div class="disp" style="font-size:30px;margin-top:3px">Week ${weekNo()} · ${S.profile.name||'You'}</div></div>
-    <div style="text-align:right"><div class="disp" style="font-size:24px;color:var(--amber)">${lost} kg</div>
-    <div class="eyebrow">dropped</div></div></div></div>`;
+    <div style="text-align:right">
+      ${streak>0?`<div class="disp" style="font-size:20px;color:var(--amber)">🔥 ${streak}</div><div class="eyebrow">day streak</div>`
+        :`<div class="disp" style="font-size:24px;color:var(--amber)">${lost} kg</div><div class="eyebrow">dropped</div>`}
+    </div></div>
+    <div style="display:flex;gap:2px;margin-top:12px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:12px">${calHtml}</div>
+  </div>`;
 }
 
 /* ---- TODAY ---- */
@@ -304,6 +346,11 @@ function viewToday(){
     <div class="grid2" style="margin-top:16px">
       <div><div class="eyebrow" style="margin-bottom:7px">Energy</div><div style="display:flex;gap:5px">${energy}</div></div>
       <div><div class="eyebrow" style="margin-bottom:7px">Sleep (hrs)</div><input id="sleep" inputmode="decimal" value="${t.sleep}" placeholder="7.5"></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="row"><span class="eyebrow">Steps</span><span class="xs mut2">target 10,000</span></div>
+      <input id="steps" inputmode="numeric" value="${t.steps}" placeholder="e.g. 6500" style="margin-top:7px">
+      <div class="bar"><i style="width:${Math.min(100,(parseInt(t.steps)||0)/10000*100)}%"></i></div>
     </div>
   </div>`;
 }
@@ -464,6 +511,24 @@ function viewPlan(){
     </div>
     <button class="btn amber" id="psave" style="margin-top:12px">Save targets</button>
   </div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:10px">BMI · BMR · TDEE Calculator</div>
+    <div class="grid2">
+      <div><div class="xs mut2" style="margin-bottom:5px">Height (cm)</div><input id="calcH" inputmode="numeric" value="${S.profile.heightCm||173}"></div>
+      <div><div class="xs mut2" style="margin-bottom:5px">Weight (kg)</div><input id="calcW" inputmode="decimal" value="${S.profile.currentWeight||S.profile.startWeight||''}"></div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div><div class="xs mut2" style="margin-bottom:5px">Age</div><input id="calcAge" inputmode="numeric" value="${S.profile.age||25}"></div>
+      <div><div class="xs mut2" style="margin-bottom:5px">Activity</div>
+        <select id="calcAct" style="width:100%;background:#27272a;border:none;border-radius:12px;padding:11px 10px;color:var(--txt);font-size:14px">
+          <option value="1.2">Sedentary (desk job)</option>
+          <option value="1.375">Light (1-3 gym/wk)</option>
+          <option value="1.55" selected>Moderate (4-6 gym/wk)</option>
+          <option value="1.725">Very active</option>
+        </select></div>
+    </div>
+    <button class="btn amber" id="calcRun" style="margin-top:12px">Calculate</button>
+    <div id="calcOut" style="margin-top:12px"></div>
+  </div>
   <div class="card"><div class="eyebrow" style="margin-bottom:8px">Habit fixes</div>
     <ul class="sm mut" style="list-style:none;display:flex;flex-direction:column;gap:8px">
       <li>Tea on empty stomach → eat first, tea after 30 min</li>
@@ -512,6 +577,7 @@ function attach(){
     document.querySelectorAll('[data-energy]').forEach(b=>b.onclick=()=>{S.today.energy=+b.dataset.energy;queueSave();render();});
     const wb=document.getElementById('wbtn'); if(wb) wb.onclick=()=>{S.today.workoutDone=!S.today.workoutDone;queueSave();render();};
     const sl=document.getElementById('sleep'); if(sl) sl.onchange=()=>{S.today.sleep=sl.value;queueSave();};
+    const st=document.getElementById('steps'); if(st) st.onchange=()=>{S.today.steps=st.value;queueSave();render();};
     document.querySelectorAll('.exin').forEach(i=>i.oninput=()=>{const name=i.dataset.ex,f=i.dataset.f;
       if(!S.today.ex[name])S.today.ex[name]={w:'',r:''};S.today.ex[name][f]=i.value;queueSave();});
     document.getElementById('foodadd').onclick=()=>{
@@ -549,6 +615,28 @@ function attach(){
     document.getElementById('psave').onclick=async()=>{S.profile.currentWeight=parseFloat(document.getElementById('pcur').value)||S.profile.currentWeight;
       S.profile.startWeight=parseFloat(document.getElementById('pstart').value)||S.profile.startWeight;await api('saveProfile',{profile:S.profile});flashSaved();render();};
     document.getElementById('reseturl').onclick=()=>{localStorage.removeItem(LS_URL);API_URL='';renderSetup();};
+    document.getElementById('calcRun').onclick=async()=>{
+      const h=parseFloat(document.getElementById('calcH').value)||173;
+      const w=parseFloat(document.getElementById('calcW').value)||70;
+      const age=parseFloat(document.getElementById('calcAge').value)||25;
+      const act=parseFloat(document.getElementById('calcAct').value)||1.55;
+      const bmi=(w/((h/100)**2)).toFixed(1);
+      const bmr=Math.round(10*w+6.25*h-5*age+5);
+      const tdee=Math.round(bmr*act);
+      const cutCal=tdee-500;
+      let bmiCat='Normal', bmiColor='var(--green)';
+      if(bmi<18.5){bmiCat='Underweight';bmiColor='var(--amber)';}
+      else if(bmi>=25&&bmi<30){bmiCat='Overweight';bmiColor='var(--amber)';}
+      else if(bmi>=30){bmiCat='Obese';bmiColor='var(--red)';}
+      document.getElementById('calcOut').innerHTML=`
+        <div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span class="sm">BMI</span><span class="disp" style="font-size:18px;color:${bmiColor}">${bmi} · ${bmiCat}</span></div>
+        <div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span class="sm">BMR (at rest)</span><span class="disp" style="font-size:18px">${bmr} kcal</span></div>
+        <div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span class="sm">TDEE (maintenance)</span><span class="disp" style="font-size:18px">${tdee} kcal</span></div>
+        <div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span class="sm">Fat-loss target</span><span class="disp" style="font-size:18px;color:var(--amber)">${cutCal} kcal</span></div>
+        <p class="xs mut2" style="margin-top:4px">Estimate only, not medical data. Your diet plan (~2000 kcal) already accounts for this.</p>`;
+      S.profile.heightCm=h; S.profile.age=age;
+      try{ await api('saveProfile',{profile:S.profile}); }catch(e){}
+    };
   }
 }
 function bindNav(){ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;render();}); }
