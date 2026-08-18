@@ -87,7 +87,7 @@ let TAB = 'today';
 let saveTimer = null;
 
 const todayKey = () => new Date().toISOString().slice(0,10);
-function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{}, ex:{} }; }
+function emptyDay(){ return { date:todayKey(), weight:'', water:0, workoutDone:false, workoutNotes:'', energy:0, sleep:'', meals:{}, ex:{}, foods:[] }; }
 
 /* ============ DATA ============ */
 const MEALS = [
@@ -98,6 +98,41 @@ const MEALS = [
   {id:'m5',time:'9:45 PM',label:'Post-workout: whey + chicken/eggs + 1 chapati',tag:'recovery'},
   {id:'m6',time:'11:00 PM',label:'Haldi milk / makhana / dates only',tag:'craving fix'},
 ];
+// Indian food bank — [name, default qty label, kcal, protein g] per that default serving
+const FOOD_DB = [
+  {n:'Boiled egg',u:'1 pc',k:70,p:6},
+  {n:'Egg bhurji (2 eggs)',u:'1 serving',k:180,p:13},
+  {n:'Roti / chapati',u:'1 pc',k:100,p:3},
+  {n:'Bhakri (jowar/bajra)',u:'1 pc',k:120,p:3},
+  {n:'Cooked rice',u:'1 katori (150g)',k:195,p:4},
+  {n:'Dal (cooked)',u:'1 katori',k:150,p:8},
+  {n:'Rajma / chole (cooked)',u:'1 katori',k:180,p:10},
+  {n:'Paneer',u:'100g',k:265,p:18},
+  {n:'Chicken curry (boneless)',u:'100g',k:180,p:27},
+  {n:'Fish curry',u:'100g',k:150,p:20},
+  {n:'Sabzi (mixed veg)',u:'1 katori',k:120,p:3},
+  {n:'Palak / methi sabzi',u:'1 katori',k:90,p:4},
+  {n:'Dahi (curd)',u:'100g',k:60,p:3.5},
+  {n:'Milk',u:'250ml',k:150,p:8},
+  {n:'Banana',u:'1 medium',k:105,p:1.3},
+  {n:'Apple',u:'1 medium',k:95,p:0.5},
+  {n:'Roasted chana',u:'30g',k:120,p:7},
+  {n:'Peanuts',u:'30g',k:170,p:7},
+  {n:'Almonds',u:'10 pc',k:70,p:2.5},
+  {n:'Makhana (roasted)',u:'30g',k:105,p:3.5},
+  {n:'Dates (khajoor)',u:'3 pc',k:70,p:0.6},
+  {n:'Poha',u:'1 plate',k:250,p:5},
+  {n:'Upma',u:'1 plate',k:230,p:6},
+  {n:'Oats (cooked)',u:'40g dry',k:150,p:5.4},
+  {n:'Besan chilla',u:'1 pc (50g besan)',k:180,p:10},
+  {n:'Sprouts',u:'1 katori',k:100,p:8},
+  {n:'Black coffee',u:'1 cup',k:5,p:0},
+  {n:'Tea with milk',u:'1 cup',k:60,p:1.5},
+  {n:'Whey protein',u:'1 scoop',k:120,p:24},
+  {n:'Buttermilk (chaas)',u:'1 glass',k:40,p:2},
+  {n:'Cooking oil / ghee',u:'1 tsp',k:45,p:0},
+];
+
 const PPL = {
   0:{name:'Rest + Walk',focus:'Recovery',rest:true,
      warmup:[],ex:[],stretch:['30 min easy walk','Full-body light stretch 10 min']},
@@ -168,7 +203,7 @@ async function boot(){
   }
 }
 function normalizeDay(t){ return { date:t.date, weight:t.weight||'', water:+t.water||0, workoutDone:!!t.workoutDone,
-  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{}, ex:t.ex||{} }; }
+  workoutNotes:t.workoutNotes||'', energy:+t.energy||0, sleep:t.sleep||'', meals:t.meals||{}, ex:t.ex||{}, foods:t.foods||[] }; }
 function lastEx(name){ for(const l of S.logs){ if(l.date===todayKey()) continue; const e=(l.ex||{})[name]; if(e&&e.w) return {w:e.w,r:e.r,date:l.date}; } return null; }
 
 /* ============ RENDER ============ */
@@ -216,6 +251,15 @@ function viewToday(){
       <span class="xs mut2" style="display:block">${m.time} · ${m.tag}</span></span></button>`;}).join('');
   const glasses=Array.from({length:10}).map((_,i)=>`<button class="wglass ${i<t.water?'on':''}" data-water="${i+1}"></button>`).join('');
   const energy=[1,2,3,4,5].map(n=>`<button class="seg ${t.energy>=n?'on':''}" data-energy="${n}">${n}</button>`).join('');
+  const totK=Math.round((t.foods||[]).reduce((a,f)=>a+f.k*f.qty,0));
+  const totP=Math.round((t.foods||[]).reduce((a,f)=>a+f.p*f.qty,0));
+  const foodListHtml=(t.foods&&t.foods.length)?`<div style="margin-top:10px">${t.foods.map((f,i)=>`
+    <div class="row" style="padding:6px 0;border-bottom:1px solid var(--line)">
+      <span class="sm">${f.n} <span class="xs mut2">×${f.qty}</span></span>
+      <span style="display:flex;gap:10px;align-items:center">
+        <span class="xs mut2">${Math.round(f.k*f.qty)} kcal · ${Math.round(f.p*f.qty)}g</span>
+        <button data-rmfood="${i}" style="color:var(--red);font-size:16px;line-height:1">×</button>
+      </span></div>`).join('')}</div>`:'<div class="xs mut2" style="text-align:center;padding:10px 0">Nothing logged yet today.</div>';
   return `
   <div class="card">
     <div class="row"><span class="eyebrow">Today's Session</span>
@@ -229,9 +273,30 @@ function viewToday(){
     ${w.rest?'':`<button class="btn ${t.workoutDone?'green':''}" id="wbtn" style="margin-top:14px">${t.workoutDone?'✓ Session logged':'Mark session done'}</button>`}
   </div>
   <div class="card">
-    <div class="row"><span class="eyebrow">Diet · ${done}/6</span><span class="xs mut2">~2000 kcal · 150g+ protein</span></div>
+    <div class="row"><span class="eyebrow">Meal reminders · ${done}/6</span><span class="xs mut2">timing guide</span></div>
     <div class="bar"><i style="width:${done/6*100}%"></i></div>
     ${mealHtml}
+  </div>
+  <div class="card">
+    <div class="row"><span class="eyebrow">Food Log · what you actually ate</span><span class="save" id="foodsavemark">✓ saved</span></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input list="fooddb" id="foodpick" placeholder="Search food… e.g. Roti" style="flex:1">
+      <input id="foodqty" inputmode="decimal" value="1" placeholder="×" style="width:56px;text-align:center">
+      <button class="btn amber" id="foodadd" style="width:auto;padding:0 16px">Add</button>
+    </div>
+    <datalist id="fooddb">${FOOD_DB.map(f=>`<option value="${f.n}">`).join('')}</datalist>
+    <p class="xs mut2" style="margin-top:6px">Quantity = how many servings (e.g. 2 roti → qty 2). Unit shown per item below.</p>
+    ${foodListHtml}
+    <div class="row" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+      <span class="sm">Today's total</span>
+      <span class="disp" style="font-size:20px;color:var(--amber)">${totK} kcal</span>
+    </div>
+    <div class="bar"><i style="width:${Math.min(100,totK/2000*100)}%"></i></div>
+    <div class="row" style="margin-top:8px">
+      <span class="xs mut2">Protein</span>
+      <span class="disp" style="font-size:16px">${totP}g <span class="xs mut2">/ 150g</span></span>
+    </div>
+    <div class="bar"><i style="width:${Math.min(100,totP/150*100)}%;background:var(--green)"></i></div>
   </div>
   <div class="card">
     <div class="row"><span class="eyebrow">Water · ${t.water} glasses</span><span class="save" id="savemark">✓ saved</span></div>
@@ -315,12 +380,16 @@ function viewReport(){
   const r=buildReport();
   const last=S.logs.slice(0,7), gym=last.filter(l=>l.workoutDone).length;
   const adh=last.length?Math.round(last.reduce((a,l)=>a+Object.values(l.meals||{}).filter(Boolean).length,0)/(last.length*6)*100):0;
+  const daysWithFood=last.filter(l=>l.foods&&l.foods.length);
+  const avgK=daysWithFood.length?Math.round(daysWithFood.reduce((a,l)=>a+l.foods.reduce((s,f)=>s+f.k*f.qty,0),0)/daysWithFood.length):0;
+  const avgP=daysWithFood.length?Math.round(daysWithFood.reduce((a,l)=>a+l.foods.reduce((s,f)=>s+f.p*f.qty,0),0)/daysWithFood.length):0;
   return `
   <div class="card"><p class="sm mut">One-tap weekly report. Copy it and paste into a free Claude chat (claude.ai) — Claude reviews your week and gives next week's workout + diet.</p></div>
   <div class="card">
     <div class="eyebrow" style="margin-bottom:10px">This week at a glance</div>
     ${statRow('Gym sessions',gym+' / 7')}
-    ${statRow('Diet adherence',adh+'%',true)}
+    ${statRow('Avg calories',(avgK||'—')+' kcal',true)}
+    ${statRow('Avg protein',(avgP||'—')+'g')}
     ${statRow('Days logged',last.length+' / 7')}
   </div>
   <div class="card">
@@ -342,6 +411,9 @@ function buildReport(){
   const adh=last.length?Math.round(last.reduce((a,l)=>a+Object.values(l.meals||{}).filter(Boolean).length,0)/(last.length*6)*100):0;
   const sl=last.filter(l=>l.sleep).map(l=>parseFloat(l.sleep)); const avgS=sl.length?(sl.reduce((a,b)=>a+b,0)/sl.length).toFixed(1):'—';
   const en=last.filter(l=>l.energy).map(l=>+l.energy); const avgE=en.length?(en.reduce((a,b)=>a+b,0)/en.length).toFixed(1):'—';
+  const daysWithFood=last.filter(l=>l.foods&&l.foods.length);
+  const avgK=daysWithFood.length?Math.round(daysWithFood.reduce((a,l)=>a+l.foods.reduce((s,f)=>s+f.k*f.qty,0),0)/daysWithFood.length):0;
+  const avgP=daysWithFood.length?Math.round(daysWithFood.reduce((a,l)=>a+l.foods.reduce((s,f)=>s+f.p*f.qty,0),0)/daysWithFood.length):0;
   const m=S.measurements[0]||{};
   const ph=PHASES[Math.min(3, weekNo()<=16?(weekNo()<=8?(weekNo()<=4?0:1):2):3)];
   return `IRON LOG — Weekly Update (Vishal)
@@ -355,6 +427,7 @@ Recent weigh-ins: ${recent}
 THIS WEEK (last ${last.length} logged days)
 Gym sessions: ${gym}/7
 Diet adherence: ${adh}%
+Avg calories: ${avgK||'—'} kcal/day (target 2000) | Avg protein: ${avgP||'—'}g/day (target 150g) — from ${daysWithFood.length} day(s) with food logged
 Avg sleep: ${avgS} hrs | Avg energy: ${avgE}/5
 
 MEASUREMENTS (cm)${m.date?' — '+m.date:''}
@@ -441,6 +514,19 @@ function attach(){
     const sl=document.getElementById('sleep'); if(sl) sl.onchange=()=>{S.today.sleep=sl.value;queueSave();};
     document.querySelectorAll('.exin').forEach(i=>i.oninput=()=>{const name=i.dataset.ex,f=i.dataset.f;
       if(!S.today.ex[name])S.today.ex[name]={w:'',r:''};S.today.ex[name][f]=i.value;queueSave();});
+    document.getElementById('foodadd').onclick=()=>{
+      const name=document.getElementById('foodpick').value.trim();
+      const qty=parseFloat(document.getElementById('foodqty').value)||1;
+      const item=FOOD_DB.find(f=>f.n.toLowerCase()===name.toLowerCase());
+      if(!item){ document.getElementById('foodpick').style.boxShadow='0 0 0 1px var(--red)'; return; }
+      if(!S.today.foods) S.today.foods=[];
+      S.today.foods.push({n:item.n,u:item.u,k:item.k,p:item.p,qty:qty});
+      document.getElementById('foodpick').value=''; document.getElementById('foodqty').value='1';
+      queueSave(); render();
+    };
+    document.querySelectorAll('[data-rmfood]').forEach(b=>b.onclick=()=>{
+      S.today.foods.splice(+b.dataset.rmfood,1); queueSave(); render();
+    });
   }
   if(TAB==='progress'){
     document.getElementById('wsave').onclick=async()=>{const v=document.getElementById('wnow').value;if(!v)return;
