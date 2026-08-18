@@ -9,62 +9,83 @@
 <meta name="apple-mobile-web-app-title" content="Iron Log">
 <link rel="manifest" href='data:application/json,{"name":"Iron Log","short_name":"Iron Log","display":"standalone","background_color":"%2309090b","theme_color":"%2309090b","icons":[]}'>
 <title>Iron Log</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#09090b; --card:#18181b; --line:#27272a; --line2:#3f3f46;
-    --txt:#f4f4f5; --mut:#a1a1aa; --mut2:#71717a;
-    --amber:#fbbf24; --amber-dim:rgba(251,191,36,.15);
-    --green:#34d399; --red:#f87171;
+    --bg:#0a0a0b; --bg2:#0d0d0f; --card:#151517; --card2:#1b1b1e; --line:#242427; --line2:#38383d;
+    --txt:#f3f2ef; --mut:#9c9892; --mut2:#67635e;
+    --amber:#eea310; --amber2:#c9840a; --amber-dim:rgba(238,163,16,.13);
+    --green:#33c98a; --green-dim:rgba(51,201,138,.13); --red:#ef5652; --red-dim:rgba(239,86,82,.13);
+    --steel:#7c8a99;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-  body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;padding-bottom:84px}
+  html{-webkit-text-size-adjust:100%}
+  body{background:
+      radial-gradient(680px 320px at 50% -60px, rgba(238,163,16,.10), transparent 65%),
+      var(--bg);
+    color:var(--txt);font-family:Inter,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;padding-bottom:92px;min-height:100vh}
   .wrap{max-width:480px;margin:0 auto;padding:0 16px}
-  .disp{font-family:'Barlow Condensed',sans-serif;letter-spacing:.01em}
-  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.22em;color:var(--mut2)}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+  .disp{font-family:'Barlow Condensed',sans-serif;letter-spacing:.008em;font-variant-numeric:tabular-nums}
+  .eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.2em;color:var(--mut2);font-weight:600;
+    display:flex;align-items:center;gap:6px}
+  .eyebrow svg{width:13px;height:13px;flex:0 0 auto;opacity:.85}
+  .card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;
+    padding:16px;margin-bottom:12px;box-shadow:0 1px 0 rgba(255,255,255,.02) inset, 0 8px 20px -14px rgba(0,0,0,.6);
+    animation:rise .35s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .row{display:flex;align-items:center;justify-content:space-between}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-  input,textarea{font-family:inherit;width:100%;background:#27272a;border:none;border-radius:12px;
-    padding:11px 14px;color:var(--txt);font-size:15px;outline:none}
-  input:focus,textarea:focus{box-shadow:0 0 0 1px var(--amber)}
-  .btn{width:100%;padding:12px;border-radius:13px;background:#27272a;color:var(--mut);font-weight:600;font-size:14px;transition:.15s}
-  .btn:active{transform:scale(.98)}
-  .btn.amber{background:var(--amber);color:#09090b}
-  .btn.green{background:var(--green);color:#09090b}
-  .pill{font-size:11px;padding:3px 9px;border-radius:99px}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+  input,select,textarea{font-family:inherit;width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:11px 14px;color:var(--txt);font-size:15px;outline:none;transition:box-shadow .15s,border-color .15s}
+  input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px var(--amber-dim);border-color:var(--amber)}
+  .btn{width:100%;padding:13px;border-radius:13px;background:var(--card2);border:1px solid var(--line);color:var(--mut);
+    font-weight:600;font-size:14px;transition:transform .12s,filter .12s;letter-spacing:.01em}
+  .btn:active{transform:scale(.97);filter:brightness(.94)}
+  .btn.amber{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;border:none;
+    box-shadow:0 4px 14px -4px rgba(238,163,16,.5)}
+  .btn.green{background:linear-gradient(180deg,#3fdc9c,var(--green));color:#062015;border:none;
+    box-shadow:0 4px 14px -4px rgba(51,201,138,.45)}
+  .pill{font-size:10.5px;padding:4px 10px;border-radius:99px;font-weight:600;letter-spacing:.03em}
   .pill.amber{background:var(--amber-dim);color:var(--amber)}
-  .pill.grey{background:#27272a;color:var(--mut)}
-  .hdr{padding:24px 0 14px}
-  .check{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;
-    font-size:13px;flex:0 0 auto;border:1px solid var(--line2);color:transparent}
-  .check.on{background:var(--green);color:#09090b;border-color:var(--green)}
+  .pill.grey{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
+  .hdr{padding:20px 0 14px}
+  .check{width:23px;height:23px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;flex:0 0 auto;border:1.5px solid var(--line2);color:transparent;transition:.15s}
+  .check.on{background:linear-gradient(180deg,#3fdc9c,var(--green));color:#062015;border-color:transparent}
   .meal{display:flex;gap:12px;align-items:flex-start;padding:9px 0;text-align:left;width:100%}
   .strike{color:var(--mut2);text-decoration:line-through}
-  .bar{height:6px;border-radius:99px;background:#27272a;overflow:hidden;margin:10px 0 4px}
-  .bar > i{display:block;height:100%;background:var(--amber);transition:width .4s}
-  .wglass{flex:1;height:34px;border-radius:8px;background:#27272a;transition:.15s}
-  .wglass.on{background:var(--amber)}
-  .seg{flex:1;padding:9px 0;border-radius:9px;background:#27272a;color:var(--mut2);font-size:14px;text-align:center}
-  .seg.on{background:var(--amber);color:#09090b;font-weight:600}
+  .bar{height:6px;border-radius:99px;background:var(--card2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--amber2),var(--amber));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .wglass{flex:1;height:34px;border-radius:8px;background:var(--card2);border:1px solid var(--line);transition:.15s}
+  .wglass.on{background:linear-gradient(180deg,#f5b02a,var(--amber));border-color:transparent}
+  .seg{flex:1;padding:9px 0;border-radius:9px;background:var(--card2);border:1px solid var(--line);color:var(--mut2);font-size:14px;text-align:center;transition:.15s}
+  .seg.on{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;font-weight:700;border-color:transparent}
   nav{position:fixed;left:0;right:0;bottom:0;z-index:20}
-  nav .bar2{max-width:480px;margin:0 auto;background:rgba(24,24,27,.96);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
-  nav button{flex:1;padding:11px 0;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mut2)}
+  nav .bar2{max-width:480px;margin:0 auto;background:rgba(15,15,17,.92);backdrop-filter:blur(14px) saturate(160%);
+    border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);position:relative}
+  nav button{flex:1;padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--mut2);position:relative;transition:color .15s}
   nav button.on{color:var(--amber)}
-  nav .ic{font-size:17px;line-height:1}
-  nav .lb{font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+  nav button.on::before{content:'';position:absolute;top:2px;width:26px;height:26px;border-radius:9px;background:var(--amber-dim);z-index:-1}
+  nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  nav .lb{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
   .bub{max-width:86%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
-  .bub.me{background:var(--amber);color:#09090b;border-bottom-right-radius:5px}
+  .bub.me{background:linear-gradient(180deg,#f5b02a,var(--amber));color:#1a1206;border-bottom-right-radius:5px}
   .bub.ai{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
   .chip{font-size:12px;padding:7px 12px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--mut)}
-  .save{font-size:11px;color:var(--green);opacity:0;transition:.3s}
+  .save{font-size:11px;color:var(--green);opacity:0;transition:.3s;font-weight:600}
   .save.show{opacity:1}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   a{color:var(--amber)}
   .mut{color:var(--mut)} .mut2{color:var(--mut2)} .sm{font-size:13px} .xs{font-size:11px}
+  .plate{width:56px;height:56px;border-radius:99px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 35% 30%, #232326, #131315 70%);border:1px solid var(--line2);
+    box-shadow:inset 0 0 0 3px var(--bg), inset 0 0 0 4px var(--line2), 0 6px 16px -8px rgba(0,0,0,.7);position:relative}
+  .plate::after{content:'';position:absolute;width:16px;height:16px;border-radius:99px;background:var(--bg);border:1px solid var(--line2)}
+  .plate .pv{position:relative;z-index:2;font-family:'Barlow Condensed';font-weight:700;font-size:15px;color:var(--amber)}
+  #app{animation:fadein .25s ease both}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -72,10 +93,10 @@
 <div id="app"><div class="wrap" style="padding-top:40vh;text-align:center;color:var(--mut2)">Loading…</div></div>
 
 <nav id="nav" style="display:none"><div class="bar2">
-  <button data-tab="today"><span class="ic">▦</span><span class="lb">Today</span></button>
-  <button data-tab="progress"><span class="ic">↗</span><span class="lb">Progress</span></button>
-  <button data-tab="report"><span class="ic">✦</span><span class="lb">Report</span></button>
-  <button data-tab="plan"><span class="ic">▤</span><span class="lb">Plan</span></button>
+  <button data-tab="today"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="lb">Today</span></button>
+  <button data-tab="progress"><svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg><span class="lb">Progress</span></button>
+  <button data-tab="report"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg><span class="lb">Report</span></button>
+  <button data-tab="plan"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg><span class="lb">Plan</span></button>
 </div></nav>
 
 <script>
@@ -255,18 +276,20 @@ function header(){
   const streak=calcStreak();
   const cal=last7Days();
   const dotColor={done:'var(--green)',missed:'var(--red)',today:'var(--amber)','rest-logged':'var(--mut2)',rest:'var(--line2)',future:'var(--line)'};
-  const calHtml=cal.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
-    <span class="xs mut2">${d.label}</span>
-    <span style="width:9px;height:9px;border-radius:99px;background:${dotColor[d.status]}"></span>
+  const calHtml=cal.map(d=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+    <span class="xs mut2" style="font-weight:600">${d.label}</span>
+    <span style="width:8px;height:8px;border-radius:99px;background:${dotColor[d.status]};box-shadow:${d.status==='today'?'0 0 0 3px var(--amber-dim)':'none'}"></span>
   </div>`).join('');
-  return `<div class="wrap hdr"><div class="row" style="align-items:flex-end">
-    <div><div class="eyebrow" style="color:var(--amber)">Iron Log</div>
-    <div class="disp" style="font-size:30px;margin-top:3px">Week ${weekNo()} · ${S.profile.name||'You'}</div></div>
-    <div style="text-align:right">
-      ${streak>0?`<div class="disp" style="font-size:20px;color:var(--amber)">🔥 ${streak}</div><div class="eyebrow">day streak</div>`
-        :`<div class="disp" style="font-size:24px;color:var(--amber)">${lost} kg</div><div class="eyebrow">dropped</div>`}
-    </div></div>
-    <div style="display:flex;gap:2px;margin-top:12px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:12px">${calHtml}</div>
+  return `<div class="wrap hdr"><div class="row" style="align-items:center">
+    <div><div class="eyebrow" style="color:var(--amber)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>
+      Iron Log</div>
+    <div class="disp" style="font-size:29px;margin-top:4px;font-weight:700">Week ${weekNo()} <span class="mut2" style="font-weight:500">· ${S.profile.name||'You'}</span></div></div>
+    <div class="plate">
+      ${streak>0?`<span class="pv">🔥${streak}</span>`:`<span class="pv" style="font-size:13px">${lost}<br><span style="font-size:8px;letter-spacing:.05em">KG</span></span>`}
+    </div>
+    </div>
+    <div style="display:flex;gap:2px;margin-top:14px;padding:9px 10px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:13px">${calHtml}</div>
   </div>`;
 }
 
@@ -304,7 +327,7 @@ function viewToday(){
       </span></div>`).join('')}</div>`:'<div class="xs mut2" style="text-align:center;padding:10px 0">Nothing logged yet today.</div>';
   return `
   <div class="card">
-    <div class="row"><span class="eyebrow">Today's Session</span>
+    <div class="row"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12"/></svg>Today's Session</span>
       <span class="pill ${w.rest?'grey':'amber'}">${(weekNo()<=3&&!S.profile.skipTrainer)?'Trainer phase':'PPL · Wk '+weekNo()}</span></div>
     <div class="disp" style="font-size:28px;margin-top:2px">${w.name}</div>
     <div class="sm mut">${w.focus}</div>
@@ -320,7 +343,7 @@ function viewToday(){
     ${mealHtml}
   </div>
   <div class="card">
-    <div class="row"><span class="eyebrow">Food Log · what you actually ate</span><span class="save" id="foodsavemark">✓ saved</span></div>
+    <div class="row"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s-6 6-6 11a6 6 0 0 0 12 0c0-2-1-3-1-3s-1 2-2 2c1-3-1-5-1-7 0 2-2 3-2 5 0-3 1-5 0-8z"/></svg>Food Log</span><span class="save" id="foodsavemark">✓ saved</span></div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <input list="fooddb" id="foodpick" placeholder="Search food… e.g. Roti" style="flex:1">
       <input id="foodqty" inputmode="decimal" value="1" placeholder="×" style="width:56px;text-align:center">
@@ -341,7 +364,7 @@ function viewToday(){
     <div class="bar"><i style="width:${Math.min(100,totP/150*100)}%;background:var(--green)"></i></div>
   </div>
   <div class="card">
-    <div class="row"><span class="eyebrow">Water · ${t.water} glasses</span><span class="save" id="savemark">✓ saved</span></div>
+    <div class="row"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>Water · ${t.water} glasses</span><span class="save" id="savemark">✓ saved</span></div>
     <div style="display:flex;gap:6px;margin-top:8px">${glasses}</div>
     <div class="grid2" style="margin-top:16px">
       <div><div class="eyebrow" style="margin-bottom:7px">Energy</div><div style="display:flex;gap:5px">${energy}</div></div>
@@ -374,7 +397,7 @@ function viewProgress(){
     </div>
   </div>
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:8px">Log today's weight</div>
+    <div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Log today's weight</div>
     <div style="display:flex;gap:8px">
       <input id="wnow" inputmode="decimal" value="${S.today.weight||''}" placeholder="94.7" style="font-family:'Barlow Condensed';font-size:18px">
       <button class="btn amber" id="wsave" style="width:auto;padding:0 22px">Save</button>
@@ -382,11 +405,11 @@ function viewProgress(){
     <p class="xs mut2" style="margin-top:8px">Weigh Sunday morning, same time, before eating.</p>
   </div>
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:8px">Weight trend</div>
+    <div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg>Weight trend</div>
     ${wts.length<2?'<div class="sm mut2" style="text-align:center;padding:18px 0">Log a few weigh-ins to see your curve.</div>':sparkSvg(wts)}
   </div>
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:10px">Measurements (cm)${m.date?' · last '+m.date.slice(5):''}</div>
+    <div class="eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7 8v3M11 8v3M15 8v3"/></svg>Measurements (cm)${m.date?' · last '+m.date.slice(5):''}</div>
     <div class="grid4">
       ${measInput('waist','Waist',m.waist)}${measInput('chest','Chest',m.chest)}
       ${measInput('arm','Arm',m.arm)}${measInput('thigh','Thigh',m.thigh)}
@@ -394,7 +417,7 @@ function viewProgress(){
     <button class="btn amber" id="msave" style="margin-top:12px">Save measurements</button>
   </div>
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:8px">Progress photo</div>
+    <div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg>Progress photo</div>
     <p class="xs mut2" style="margin-bottom:10px">Front / side / back, same light, every Sunday.</p>
     <div class="grid2">
       <label class="btn" style="display:block;text-align:center"><input type="file" accept="image/*" id="phF" hidden>Front</label>
@@ -433,14 +456,14 @@ function viewReport(){
   return `
   <div class="card"><p class="sm mut">One-tap weekly report. Copy it and paste into a free Claude chat (claude.ai) — Claude reviews your week and gives next week's workout + diet.</p></div>
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:10px">This week at a glance</div>
+    <div class="eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg>This week at a glance</div>
     ${statRow('Gym sessions',gym+' / 7')}
     ${statRow('Avg calories',(avgK||'—')+' kcal',true)}
     ${statRow('Avg protein',(avgP||'—')+'g')}
     ${statRow('Days logged',last.length+' / 7')}
   </div>
   <div class="card">
-    <div class="row" style="margin-bottom:8px"><span class="eyebrow">Your report</span><span class="save" id="savemark">✓ copied</span></div>
+    <div class="row" style="margin-bottom:8px"><span class="eyebrow"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>Your report</span><span class="save" id="savemark">✓ copied</span></div>
     <textarea id="reptext" readonly style="height:230px;font-size:12px;line-height:1.5;background:#0f0f12">${escapeHtml(r)}</textarea>
     <button class="btn amber" id="copyrep" style="margin-top:12px">Copy report for Claude</button>
     <p class="xs mut2" style="margin-top:8px">Paste it in a Claude chat. Claude remembers your journey, so each week builds on the last.</p>
@@ -491,11 +514,11 @@ function viewPlan(){
     <div class="xs mut2">${p.m} · ${p.g}</div></div></div>`).join('');
   return `
   <div class="card">
-    <div class="eyebrow" style="margin-bottom:8px">Sunday Weekly Review</div>
+    <div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Sunday Weekly Review</div>
     <p class="sm mut" style="margin-bottom:12px">Weigh in, take photos, then open your weekly report and paste it into a Claude chat for your next week's plan.</p>
     <button class="btn amber" id="review">Open weekly report</button>
   </div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:12px">Competition Roadmap</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18M5 4h13l-3 4 3 4H5"/></svg>Competition Roadmap</div>
     <div style="display:flex;flex-direction:column;gap:11px">${phases}</div></div>
   <div class="card"><div class="eyebrow" style="margin-bottom:8px">Plan start date</div>
     <input type="date" id="sdate" value="${S.profile.startDate||todayKey()}">
@@ -504,14 +527,14 @@ function viewPlan(){
       <span class="sm">Skip trainer phase — start PPL now</span>
       <button class="seg ${S.profile.skipTrainer?'on':''}" id="skiptr" style="flex:0 0 auto;padding:7px 16px">${S.profile.skipTrainer?'ON':'OFF'}</button>
     </div></div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:10px">Targets</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>Targets</div>
     <div class="grid2">
       <div><div class="xs mut2" style="margin-bottom:5px">Current weight</div><input id="pcur" inputmode="decimal" value="${S.profile.currentWeight||''}"></div>
       <div><div class="xs mut2" style="margin-bottom:5px">Start weight</div><input id="pstart" inputmode="decimal" value="${S.profile.startWeight||''}"></div>
     </div>
     <button class="btn amber" id="psave" style="margin-top:12px">Save targets</button>
   </div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:10px">BMI · BMR · TDEE Calculator</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>BMI · BMR · TDEE Calculator</div>
     <div class="grid2">
       <div><div class="xs mut2" style="margin-bottom:5px">Height (cm)</div><input id="calcH" inputmode="numeric" value="${S.profile.heightCm||173}"></div>
       <div><div class="xs mut2" style="margin-bottom:5px">Weight (kg)</div><input id="calcW" inputmode="decimal" value="${S.profile.currentWeight||S.profile.startWeight||''}"></div>
@@ -529,13 +552,13 @@ function viewPlan(){
     <button class="btn amber" id="calcRun" style="margin-top:12px">Calculate</button>
     <div id="calcOut" style="margin-top:12px"></div>
   </div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:8px">Habit fixes</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Habit fixes</div>
     <ul class="sm mut" style="list-style:none;display:flex;flex-direction:column;gap:8px">
       <li>Tea on empty stomach → eat first, tea after 30 min</li>
       <li>Late lunch → 1:15 PM alarm "EAT NOW"</li>
       <li>Night sugar + mobile → makhana ready, brush 10:30, phone down after 11</li>
     </ul></div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:10px">Form Guide — key lifts</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z"/><path d="M20 19H6.5a2.5 2.5 0 0 0 0 5H20"/></svg>Form Guide — key lifts</div>
     <div class="sm mut" style="display:flex;flex-direction:column;gap:10px">
       <div><span style="color:var(--amber)">Romanian Deadlift (RDL)</span> — legs near-straight, push hips BACK, bar slides down to shins (not floor). Feel it in hamstrings. Back flat, never round. Hamstrings + glutes.</div>
       <div><span style="color:var(--amber)">Conventional Deadlift</span> — bar on floor near shins, chest up, back flat, push through heels, bar slides close to body up to standing. Whole back + legs. Round back = injury.</div>
@@ -545,7 +568,7 @@ function viewPlan(){
       <div><span style="color:var(--amber)">Overhead press</span> — bar at shoulders, brace core, press straight up, don't lean back. Squeeze at top.</div>
       <div class="xs mut2" style="font-style:italic">Golden rule: back flat, control the weight, full range. Form first, ego never. Watch one YouTube video per lift + get a trainer to check your first session.</div>
     </div></div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:8px">Before you train</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Before you train</div>
     <ul class="sm mut" style="list-style:none;display:flex;flex-direction:column;gap:7px">
       <li>Eat 45–60 min before (banana + protein), not right before</li>
       <li>Warm up: 5 min cardio + 2 light sets of first exercise</li>
@@ -553,7 +576,7 @@ function viewPlan(){
       <li>Water bottle + log your weights as you go</li>
       <li>Weeks 1–2: lighter weight, learn form. Full intensity Week 3+</li>
     </ul></div>
-  <div class="card"><div class="eyebrow" style="margin-bottom:8px">Backend</div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7a5 5 0 0 1 0-10h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg>Backend</div>
     <p class="xs mut2" style="margin-bottom:10px">Connected. Change it only if you redeploy.</p>
     <button class="btn" id="reseturl">Change backend URL</button></div>`;
 }
